@@ -4,8 +4,10 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
+from ninesix.log import Logger
 
 torch.manual_seed(1)
+logger = Logger("example")
 
 def to_scalar(var):
     # returns a python float
@@ -164,6 +166,7 @@ class BiLSTM_CRF(nn.Module):
         return forward_score - gold_score
 
     def forward(self, sentence):  # dont confuse this with _forward_alg above.
+        logger.log("I'm here.")
         # Get the emission scores from the BiLSTM
         lstm_feats = self._get_lstm_features(sentence)
 
@@ -200,7 +203,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
 # Check predictions before training
 precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
 precheck_tags = torch.LongTensor([tag_to_ix[t] for t in training_data[0][1]])
-print(model(precheck_sent))
+logger.log(model(precheck_sent))
 
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
 for epoch in range(
@@ -225,5 +228,5 @@ for epoch in range(
 
 # Check predictions after training
 precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
-print(model(precheck_sent))
+logger.log(model(precheck_sent))
 # We got it!
