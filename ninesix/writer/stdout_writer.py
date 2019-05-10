@@ -93,7 +93,7 @@ class StdoutWriter():
             if len(label) > label_maxlen:
                 label_maxlen = len(label)
             if len(str(item)) > value_maxlen:
-                value_maxlen = value_len
+                value_maxlen = len(str(item))
         column_num = width // (label_maxlen + value_maxlen + 4)
         if column_num < 1:
             column_num = 1

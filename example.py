@@ -209,8 +209,10 @@ logger.msg(model(precheck_sent))
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
 for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
     logger.progress("epoch", epoch + 1, total=300)
+    logger.progress("fake epoch", epoch + 1)
     for idx, (sentence, tags) in enumerate(training_data):
         logger.progress("data index", idx + 1, total=len(training_data))
+        logger.progress("fake data index", idx + 100)
         # Step 1. Remember that Pytorch accumulates gradients.
         # We need to clear them out before each instance
         model.zero_grad()
@@ -222,7 +224,12 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
         # Step 3. Run our forward pass.
         neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets)
-        logger.value({"-L": neg_log_likelihood.data.tolist()[0]})
+        if idx == 0:
+            logger.value({
+                "-L": neg_log_likelihood.data.tolist()[0],
+                "input": sentence_in.data.tolist(),
+                "target": targets.tolist()
+            })
 
         # Step 4. Compute the loss, gradients, and update the parameters by
         # calling optimizer.step()
