@@ -1,3 +1,1 @@
-from ninesix import log
-
-__all__ = ['log']
+from ninesix.log import Logger

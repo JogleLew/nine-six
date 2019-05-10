@@ -4,7 +4,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
-from ninesix.log import Logger
+from ninesix import Logger
 
 torch.manual_seed(1)
 logger = Logger("example")
@@ -93,6 +93,7 @@ class BiLSTM_CRF(nn.Module):
                 # scores.
                 alphas_t.append(log_sum_exp(next_tag_var))
             forward_var = torch.cat(alphas_t).view(1, -1)
+            forward_var = torch.cat(alphas_t).view(1, -1)
         terminal_var = forward_var + self.transitions[self.tag_to_ix[STOP_TAG]]
         alpha = log_sum_exp(terminal_var)
         return alpha
@@ -166,7 +167,7 @@ class BiLSTM_CRF(nn.Module):
         return forward_score - gold_score
 
     def forward(self, sentence):  # dont confuse this with _forward_alg above.
-        logger.log("I'm here.")
+        logger.msg("I'm here.")
         # Get the emission scores from the BiLSTM
         lstm_feats = self._get_lstm_features(sentence)
 
@@ -176,7 +177,7 @@ class BiLSTM_CRF(nn.Module):
 
 START_TAG = "<START>"
 STOP_TAG = "<STOP>"
-EMBEDDING_DIM = 5
+EMBEDDING_DIM = 32
 HIDDEN_DIM = 4
 
 # Make up some training data
@@ -203,12 +204,13 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
 # Check predictions before training
 precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
 precheck_tags = torch.LongTensor([tag_to_ix[t] for t in training_data[0][1]])
-logger.log(model(precheck_sent))
+logger.msg(model(precheck_sent))
 
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
-for epoch in range(
-        300):  # again, normally you would NOT do 300 epochs, it is toy data
-    for sentence, tags in training_data:
+for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
+    logger.progress("epoch", epoch + 1, total=300)
+    for idx, (sentence, tags) in enumerate(training_data):
+        logger.progress("data index", idx + 1, total=len(training_data))
         # Step 1. Remember that Pytorch accumulates gradients.
         # We need to clear them out before each instance
         model.zero_grad()
@@ -220,13 +222,16 @@ for epoch in range(
 
         # Step 3. Run our forward pass.
         neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets)
+        logger.value({"-L": neg_log_likelihood.data.tolist()[0]})
 
         # Step 4. Compute the loss, gradients, and update the parameters by
         # calling optimizer.step()
         neg_log_likelihood.backward()
         optimizer.step()
+    logger.unwatch("data index")
+logger.unwatch("epoch")
 
 # Check predictions after training
 precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
-logger.log(model(precheck_sent))
+logger.msg(model(precheck_sent))
 # We got it!
