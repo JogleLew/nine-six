@@ -9,7 +9,7 @@ import os
 import sys
 
 class StdoutWriter():
-    def __init__(self):
+    def __init__(self, assign_width=-1):
         self.dirty = True
         self.last_len = 0
         try:
@@ -18,6 +18,8 @@ class StdoutWriter():
                 width = 10
         except:
             width = 50
+        if assign_width > 0:
+            width = assign_width
         self.width = width
 
     def msg(self, message, log_frame, cur_time, tag):
@@ -56,56 +58,60 @@ class StdoutWriter():
         message = ""
 
         # print progress data
-        label_maxlen = 0
-        value_maxlen = 0
-        for label, item in watch_pgs.items():
-            if len(label) > label_maxlen:
-                label_maxlen = len(label)
-            value_len = len(str(item["current"]))
-            if "max" in item:
-                value_len += len(str(item["max"])) + 3
-            if value_len > value_maxlen:
-                value_maxlen = value_len
-        column_num = width // (label_maxlen + value_maxlen + 4)
-        if column_num < 1:
-            column_num = 1
-        line_str = ""
-        for idx, (label, item) in enumerate(watch_pgs.items()):
-            value_str = str(item["current"])
-            if "max" in item:
-                value_str += " / " + str(item["max"])
-            line_str +=  "%s: %s  " % (
-                self.fix_length(label, label_maxlen, 1),
-                self.fix_length(value_str, value_maxlen, 1)
-            )
-            if (idx + 1) % column_num == 0:
+        if len(watch_pgs) > 0:
+            label_maxlen = 0
+            value_maxlen = 0
+            for label, item in watch_pgs.items():
+                if len(label) > label_maxlen:
+                    label_maxlen = len(label)
+                value_len = len(str(item["current"]))
+                if "max" in item:
+                    value_len += len(str(item["max"])) + 3
+                if value_len > value_maxlen:
+                    value_maxlen = value_len
+            column_num = width // (label_maxlen + value_maxlen + 4)
+            if column_num < 1:
+                column_num = 1
+            line_str = ""
+            for idx, (label, item) in enumerate(watch_pgs.items()):
+                value_str = str(item["current"])
+                if "max" in item:
+                    value_str += " / " + str(item["max"])
+                line_str +=  "%s: %s  " % (
+                    self.fix_length(label, label_maxlen, 1),
+                    self.fix_length(value_str, value_maxlen, 1)
+                )
+                if (idx + 1) % column_num == 0:
+                    message += self.fix_length(line_str, self.width, 1)
+                    line_str = ""
+            if len(watch_pgs) % column_num > 0:
                 message += self.fix_length(line_str, self.width, 1)
-                line_str = ""
-        if len(watch_pgs) % column_num > 0:
-            message += self.fix_length(line_str, self.width, 1)
 
-        message += "-" * width
+        if len(watch_pgs) > 0 and len(watch_val) > 0:
+            message += "-" * width
 
         # print value data
-        label_maxlen = 0
-        value_maxlen = 0
-        for label, item in watch_val.items():
-            if len(label) > label_maxlen:
-                label_maxlen = len(label)
-            if len(str(item)) > value_maxlen:
-                value_maxlen = len(str(item))
-        column_num = width // (label_maxlen + value_maxlen + 4)
-        if column_num < 1:
-            column_num = 1
-        line_str = ""
-        for idx, (label, item) in enumerate(watch_val.items()):
-            line_str +=  "%s: %s  " % (
-                self.fix_length(label, label_maxlen, 1),
-                self.fix_length(str(item), value_maxlen, 1)
-            )
-            if (idx + 1) % column_num == 0:
+        if len(watch_val) > 0:
+            label_maxlen = 0
+            value_maxlen = 0
+            for label, item in watch_val.items():
+                if len(label) > label_maxlen:
+                    label_maxlen = len(label)
+                if len(str(item)) > value_maxlen:
+                    value_maxlen = len(str(item))
+            column_num = width // (label_maxlen + value_maxlen + 4)
+            if column_num < 1:
+                column_num = 1
+            line_str = ""
+            for idx, (label, item) in enumerate(watch_val.items()):
+                line_str +=  "%s: %s  " % (
+                    self.fix_length(label, label_maxlen, 1),
+                    self.fix_length(str(item), value_maxlen, 1)
+                )
+                if (idx + 1) % column_num == 0:
+                    message += self.fix_length(line_str, self.width, 1)
+                    line_str = ""
+            if len(watch_val) % column_num > 0:
                 message += self.fix_length(line_str, self.width, 1)
-                line_str = ""
-        if len(watch_val) % column_num > 0:
-            message += self.fix_length(line_str, self.width, 1)
+
         return message
