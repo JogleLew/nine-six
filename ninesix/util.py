@@ -10,8 +10,12 @@ import json
 import datetime
 from argparse import Namespace
 
+home_dir = os.path.expanduser("~")
 default_config = {
-    "storage_mode": "json"
+    "storage_mode": "json",
+    "storage_option": {
+        "storage_path": os.path.join(home_dir, "96log")
+    }
 }
 
 
@@ -28,11 +32,17 @@ def json_to_object(data):
 
 
 def get_config():
-    config_file = os.path.join(os.path.expanduser("~"), ".ninesix")
+    global home_dir
+    config_file = os.path.join(home_dir, ".ninesix")
     if not os.path.isfile(config_file):
         with open(config_file, "w") as f:
             f.write(json_prettify(default_config))
             return default_config
+    config = {}
     with open(config_file, "r") as f:
         config = json.loads(f.read())
-        return config
+    if "storage_path" in config["storage_option"]:
+        storage_path = config["storage_option"]["storage_path"]
+        if not os.path.isdir(storage_path):
+            os.mkdir(storage_path)
+    return config
