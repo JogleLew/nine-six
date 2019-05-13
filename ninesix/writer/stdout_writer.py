@@ -22,6 +22,18 @@ class StdoutWriter():
             width = assign_width
         self.width = width
 
+    def config(self, config_json, log_frame, cur_time, tag):
+        file_name = log_frame.filename
+        base_name = os.path.basename(file_name)
+        line_number = log_frame.lineno
+        function_name = log_frame.function
+        code_context = log_frame.code_context
+        message = util.json_prettify(config_json)
+        self.dirty = True
+
+        sys.stdout.write("%s [%s] (%s: %d in %s()):\n%s\n\n" % (cur_time, tag, base_name, line_number, function_name, message))
+        sys.stdout.flush()
+
     def msg(self, message, log_frame, cur_time, tag):
         file_name = log_frame.filename
         base_name = os.path.basename(file_name)

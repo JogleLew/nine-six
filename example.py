@@ -1,5 +1,6 @@
 # Author: Robert Guthrie
 
+import argparse
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
@@ -180,6 +181,12 @@ STOP_TAG = "<STOP>"
 EMBEDDING_DIM = 32
 HIDDEN_DIM = 4
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--lr', type=float, default=0.01, help='Learning rate')
+parser.add_argument('--lr_decay', type=float, default=1e-4, help='Decay rate of learning rate')
+args = parser.parse_args()
+args = logger.config(args, "argparse")
+
 # Make up some training data
 training_data = [(
     "the wall street journal reported today that apple corporation made money".split(),
@@ -199,7 +206,7 @@ tag_to_ix = {"B": 0, "I": 1, "O": 2, START_TAG: 3, STOP_TAG: 4}
 
 model = BiLSTM_CRF(len(word_to_ix), tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)
 model = model.cuda()
-optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
+optimizer = optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.lr_decay)
 
 # Check predictions before training
 precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
@@ -222,7 +229,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
         # Step 3. Run our forward pass.
         neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets)
-        if idx == 0:
+        if (epoch + 1) % 50 == 0:
             logger.value({
                 "-L": neg_log_likelihood.data.tolist()[0],
                 "input": sentence_in.data.tolist(),

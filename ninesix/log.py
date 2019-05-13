@@ -5,6 +5,7 @@
 """ log.py """
 """ Copyright 2019, Jogle Lew """
 
+import os
 import inspect
 import logging
 import threading
@@ -29,6 +30,23 @@ class Logger():
             if config["storage_mode"] == "json":
                 pass # self.daos.append(JSONWriter())
         self.msg("Logger [%s] Initialized." % name)
+
+    def config(self, cfg, fmt, tag="Config", log_level=1):
+        self._lock.acquire()
+        if log_level > self.log_level:
+            log_frame = inspect.stack()[1]
+            cur_time = util.current_time()
+            if fmt == "json":
+                config_json = cfg
+            elif fmt == "argparse":
+                config_json = vars(cfg)
+            if "NINESIX_CONFIG" in os.environ:
+                # TODO Config Hijack
+                pass
+            for dao in self.daos:
+                dao.msg(config_json, log_frame, cur_time, tag)
+        self._lock.release()
+        return cfg
 
     def msg(self, message, tag="Log", log_level=1):
         self._lock.acquire()
