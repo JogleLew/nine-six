@@ -6,14 +6,25 @@
 """ Copyright 2019, Jogle Lew """
 
 import os
+import sys
 import json
 import inspect
 import logging
+import traceback
 import threading
 import ninesix.util as util
-from ninesix.writer import StdoutWriter
+from ninesix.writer import StdoutWriter, JSONWriter
+
+def log_except_hook(*exc_info):
+    logger = Logger.logger
+    text = "".join(traceback.format_exception(*exc_info))
+    logger.msg(text, tag="Exception")
+sys.excepthook = log_except_hook
+
 
 class Logger():
+    logger = None
+
     def __init__(self, name, log_level=0, verbose=True, preserve=True):
         self._lock = threading.Lock()
         self.name = name
@@ -29,8 +40,9 @@ class Logger():
         if preserve:
             config = util.get_config()
             if config["storage_mode"] == "json":
-                pass # self.daos.append(JSONWriter())
+                self.daos.append(JSONWriter(config, name, self.create_time))
         self.msg("Logger [%s] Initialized." % name)
+        Logger.logger = self
 
     def config(self, cfg, fmt, tag="Config", log_level=1):
         self._lock.acquire()
@@ -64,7 +76,7 @@ class Logger():
             log_frame = inspect.stack()[1]
             cur_time = util.current_time()
             for dao in self.daos:
-                dao.msg(message, log_frame, cur_time, tag)
+                dao.msg(str(message), log_frame, cur_time, tag)
         self._lock.release()
 
     def progress(self, label, cur_pgs, total=None):

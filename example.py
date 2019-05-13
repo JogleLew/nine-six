@@ -213,6 +213,8 @@ precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
 precheck_tags = torch.LongTensor([tag_to_ix[t] for t in training_data[0][1]])
 logger.msg(model(precheck_sent))
 
+0/0
+
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
 for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
     logger.progress("epoch", epoch + 1, total=300)

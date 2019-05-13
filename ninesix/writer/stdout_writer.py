@@ -52,7 +52,7 @@ class StdoutWriter():
         function_name = log_frame.function
         code_context = log_frame.code_context
         message = self._val_message(watch_pgs, watch_val)
-        content = self.fix_length("%s [%s] (%s: %d in %s()):" % (cur_time, tag, base_name, line_number, function_name), self.width, 1) + message + " " * self.width
+        content = self._fix_length("%s [%s] (%s: %d in %s()):" % (cur_time, tag, base_name, line_number, function_name), self.width, 1) + message + " " * self.width
         if not self.dirty:
             sys.stdout.write("\b" * self.last_len)
             sys.stdout.write(" " * self.last_len)
@@ -62,7 +62,7 @@ class StdoutWriter():
         self.dirty = False
         self.last_len = len(content)
 
-    def fix_length(self, word, fix_len, mode):
+    def _fix_length(self, word, fix_len, mode):
         return ' ' * (fix_len - len(word)) + word if mode == 0 else word + ' ' * (fix_len - len(word))
 
     def _val_message(self, watch_pgs, watch_val):
@@ -90,14 +90,14 @@ class StdoutWriter():
                 if "max" in item:
                     value_str += " / " + str(item["max"])
                 line_str +=  "%s: %s  " % (
-                    self.fix_length(label, label_maxlen, 1),
-                    self.fix_length(value_str, value_maxlen, 1)
+                    self._fix_length(label, label_maxlen, 1),
+                    self._fix_length(value_str, value_maxlen, 1)
                 )
                 if (idx + 1) % column_num == 0:
-                    message += self.fix_length(line_str, self.width, 1)
+                    message += self._fix_length(line_str, self.width, 1)
                     line_str = ""
             if len(watch_pgs) % column_num > 0:
-                message += self.fix_length(line_str, self.width, 1)
+                message += self._fix_length(line_str, self.width, 1)
 
         if len(watch_pgs) > 0 and len(watch_val) > 0:
             message += "-" * width
@@ -117,13 +117,13 @@ class StdoutWriter():
             line_str = ""
             for idx, (label, item) in enumerate(watch_val.items()):
                 line_str +=  "%s: %s  " % (
-                    self.fix_length(label, label_maxlen, 1),
-                    self.fix_length(str(item), value_maxlen, 1)
+                    self._fix_length(label, label_maxlen, 1),
+                    self._fix_length(str(item), value_maxlen, 1)
                 )
                 if (idx + 1) % column_num == 0:
-                    message += self.fix_length(line_str, self.width, 1)
+                    message += self._fix_length(line_str, self.width, 1)
                     line_str = ""
             if len(watch_val) % column_num > 0:
-                message += self.fix_length(line_str, self.width, 1)
+                message += self._fix_length(line_str, self.width, 1)
 
         return message

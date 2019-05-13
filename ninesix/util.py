@@ -41,8 +41,4 @@ def get_config():
     config = {}
     with open(config_file, "r") as f:
         config = json.loads(f.read())
-    if "storage_path" in config["storage_option"]:
-        storage_path = config["storage_option"]["storage_path"]
-        if not os.path.isdir(storage_path):
-            os.mkdir(storage_path)
     return config
