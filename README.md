@@ -4,6 +4,8 @@ Unified tools for Neural Network logging and managing.
 
 ## Quick Start
 
+### Pretty Logging 
+
 ```python
 from ninesix import Logger # import logger
 logger = Logger("example_nn") # Initialize logger
@@ -29,7 +31,7 @@ if __name__ == '__main__':
 The output you will get at stdout:
 ```
 2019-05-14 17:29:09 [Log] (log.py: 44 in __init__()):
-Logger [example] Initialized.
+Logger [example_nn] Initialized.
 
 2019-05-14 17:29:09 [Config] (example.py: 189 in <module>()):
 {'lr': 0.01, 'lr_decay': 0.0001, 'epoch': 300}
@@ -50,3 +52,12 @@ All done, have fun!
 ```
 
 You can try `example.py` which is a complete example.
+
+### Grid Search
+
+Command Line: 
+```
+python3 ninesix/tool/grid.py -p lr 0.1 0.01 0.001 -p epoch 100 to 201 jump 50 -g 1 2 3 -c "python example.py"
+```
+
+You can use `python3 ninesix/tool/grid.py -h` for more help.
