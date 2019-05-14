@@ -34,9 +34,13 @@ The output you will get at stdout:
 Logger [example_nn] Initialized.
 
 2019-05-14 17:29:09 [Config] (example.py: 189 in <module>()):
-{'lr': 0.01, 'lr_decay': 0.0001, 'epoch': 300}
+{
+    "epoch": 300,
+    "lr": 0.01,
+    "lr_decay": 0.0001
+}
 
-2019-05-14 17:29:11 [Log] (example.py: 171 in forward()):
+2019-05-14 17:29:11 [Log] (example.py: 171 in <module>()):
 We're going to start training...
 
 2019-05-14 17:29:22 [Log] (example.py: 237 in <module>()):
@@ -44,11 +48,25 @@ epoch     : 300 / 300
 ------------------------------------------------------------------
 loss: 0.22311973571777344  f1: 90.58  
 
-2019-05-14 17:29:22 [Log] (example.py: 237 in <module>()):
+2019-05-14 17:29:22 [Log] (example.py: 247 in <module>()):
 final_f1: 90.58
 
-2019-05-14 17:29:11 [Log] (example.py: 171 in forward()):
+2019-05-14 17:29:11 [Log] (example.py: 371 in <module>()):
 All done, have fun!
+```
+
+At the same time, you'll get a JSON log file `~/96log/example_nn/2019-05-14/172909.json`:
+
+```json
+[{"type": "msg", "tag": "Log", "time": "2019-05-14 17:29:09", "content": "JSON Writer Initialized."},
+{"type": "config", "tag": "Log", "time": "2019-05-14 17:29:09", "content": {"lr": 0.01, "lr_decay": 0.0001, "epoch": 300}},
+{"type": "msg", "tag": "Log", "time": "2019-05-14 17:29:11", "content": "We're going to start training..."},
+{"type": "value", "tag": "Log", "time": "2019-05-14 17:29:12", "content": {"progress": {"epoch": {"current": 50, "max": 300}}, "value": {"-L": 5.2108306884765625, "f1": 73.26}}},
+{"type": "value", "tag": "Log", "time": "2019-05-14 17:29:13", "content": {"progress": {"epoch": {"current": 100, "max": 300}}, "value": {"-L": 1.3068847656252345, "f1": 85.81}}},
+...
+{"type": "value", "tag": "Log", "time": "2019-05-14 17:29:22", "content": {"progress": {"epoch": {"current": 300, "max": 300}}, "value": {"-L": 0.22311973571777344, "f1": 90.58}}},
+{"type": "value", "tag": "Log", "time": "2019-05-14 17:29:22", "content": {"progress": {}, "value": {"final_f1": 90.58}}},
+{"type": "msg", "tag": "Log", "time": "2019-05-14 17:29:11", "content": "All done, have fun!"}]
 ```
 
 You can try `example.py` which is a complete example.
