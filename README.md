@@ -61,3 +61,26 @@ python3 ninesix/tool/grid.py -p lr 0.1 0.01 0.001 -p epoch 100 to 201 jump 50 -g
 ```
 
 You can use `python3 ninesix/tool/grid.py -h` for more help.
+
+Python code:
+
+```python
+from ninesix import GridSearch
+
+gs = GridSearch()
+# set environment settings
+gs.cmd_env = ""
+# set default command
+gs.cmd_template = "python3 example.py" 
+# set available GPUs
+gs.gpus = [0]
+# set parameter options
+gs.param_grid = {
+    "lr": [0.1, 0.01, 0.001],
+    "epoch": [100, 150, 200]
+}
+# generate scripts
+gs.generate_grid_search()
+# execute scripts
+gs.execute_script()
+```
