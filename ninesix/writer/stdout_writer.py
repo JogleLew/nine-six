@@ -7,6 +7,7 @@
 
 import os
 import sys
+import ninesix.util as util
 
 class StdoutWriter():
     def __init__(self, assign_width=-1):

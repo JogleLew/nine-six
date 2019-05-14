@@ -44,7 +44,7 @@ class Logger():
         self.msg("Logger [%s] Initialized." % name)
         Logger.logger = self
 
-    def config(self, cfg, fmt, tag="Config", log_level=1):
+    def config(self, cfg, fmt, tag="Log", log_level=1):
         self._lock.acquire()
         if log_level > self.log_level:
             log_frame = inspect.stack()[1]
@@ -66,7 +66,7 @@ class Logger():
                     cfg = util.json_to_object(json.dumps(config_json))
 
             for dao in self.daos:
-                dao.msg(config_json, log_frame, cur_time, tag)
+                dao.config(config_json, log_frame, cur_time, tag)
         self._lock.release()
         return cfg
 

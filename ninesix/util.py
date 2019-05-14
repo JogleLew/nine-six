@@ -24,7 +24,7 @@ def current_time():
 
 
 def json_prettify(raw_json):
-    return json.dumps(raw_json, sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
+    return json.dumps(raw_json, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
 
 
 def json_to_object(data):
