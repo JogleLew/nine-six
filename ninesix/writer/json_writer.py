@@ -24,6 +24,9 @@ class JSONWriter():
         self.file = open(self.filepath, "w")
         self._first_log(create_time)
 
+    def __del__(self):
+        self.file.close()
+
     def _mkdir(self, path):
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -39,7 +42,7 @@ class JSONWriter():
     def _log(self, json_obj):
         pos = self.file.tell()
         self.file.seek(pos - 1, os.SEEK_SET)
-        self.file.write(",")
+        self.file.write(",\n")
         self.file.write(json.dumps(json_obj))
         self.file.write("]")
 

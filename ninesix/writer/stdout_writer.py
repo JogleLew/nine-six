@@ -12,15 +12,22 @@ class StdoutWriter():
     def __init__(self, assign_width=-1):
         self.dirty = True
         self.last_len = 0
+        self.last_width = -1
+        self.assign_width = assign_width
+
+    def _get_width(self):
         try:
             width = os.get_terminal_size().columns
             if width < 10:
                 width = 10
         except:
             width = 50
-        if assign_width > 0:
-            width = assign_width
-        self.width = width
+        if self.assign_width > 0:
+            width = self.assign_width
+        if not self.last_width == width:
+            self.dirty = True
+        self.last_width = width
+        return width
 
     def config(self, config_json, log_frame, cur_time, tag):
         file_name = log_frame.filename
@@ -46,17 +53,20 @@ class StdoutWriter():
         sys.stdout.flush()
 
     def value(self, cur_dict, watch_pgs, watch_val, log_frame, cur_time, tag):
+        width = self._get_width()
         file_name = log_frame.filename
         base_name = os.path.basename(file_name)
         line_number = log_frame.lineno
         function_name = log_frame.function
         code_context = log_frame.code_context
         message = self._val_message(watch_pgs, watch_val)
-        content = self._fix_length("%s [%s] (%s: %d in %s()):" % (cur_time, tag, base_name, line_number, function_name), self.width, 1) + message + " " * self.width
+        content = self._fix_length("%s [%s] (%s: %d in %s()):" % (cur_time, tag, base_name, line_number, function_name), width, 1) + message + " " * width
         if not self.dirty:
             sys.stdout.write("\b" * self.last_len)
             sys.stdout.write(" " * self.last_len)
             sys.stdout.write("\b" * self.last_len)
+        else:
+            print("\n")
         sys.stdout.write(content)
         sys.stdout.flush()
         self.dirty = False
@@ -66,7 +76,7 @@ class StdoutWriter():
         return ' ' * (fix_len - len(word)) + word if mode == 0 else word + ' ' * (fix_len - len(word))
 
     def _val_message(self, watch_pgs, watch_val):
-        width = self.width
+        width = self._get_width()
         message = ""
 
         # print progress data
@@ -94,10 +104,10 @@ class StdoutWriter():
                     self._fix_length(value_str, value_maxlen, 1)
                 )
                 if (idx + 1) % column_num == 0:
-                    message += self._fix_length(line_str, self.width, 1)
+                    message += self._fix_length(line_str, width, 1)
                     line_str = ""
             if len(watch_pgs) % column_num > 0:
-                message += self._fix_length(line_str, self.width, 1)
+                message += self._fix_length(line_str, width, 1)
 
         if len(watch_pgs) > 0 and len(watch_val) > 0:
             message += "-" * width
@@ -121,9 +131,9 @@ class StdoutWriter():
                     self._fix_length(str(item), value_maxlen, 1)
                 )
                 if (idx + 1) % column_num == 0:
-                    message += self._fix_length(line_str, self.width, 1)
+                    message += self._fix_length(line_str, width, 1)
                     line_str = ""
             if len(watch_val) % column_num > 0:
-                message += self._fix_length(line_str, self.width, 1)
+                message += self._fix_length(line_str, width, 1)
 
         return message

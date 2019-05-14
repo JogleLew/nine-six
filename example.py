@@ -184,6 +184,7 @@ HIDDEN_DIM = 4
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=0.01, help='Learning rate')
 parser.add_argument('--lr_decay', type=float, default=1e-4, help='Decay rate of learning rate')
+parser.add_argument('--epoch', type=int, default=300, help='Epoch number')
 args = parser.parse_args()
 args = logger.config(args, "argparse")
 
@@ -213,11 +214,9 @@ precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
 precheck_tags = torch.LongTensor([tag_to_ix[t] for t in training_data[0][1]])
 logger.msg(model(precheck_sent))
 
-0/0
-
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
-for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
-    logger.progress("epoch", epoch + 1, total=300)
+for epoch in range(args.epoch):  # again, normally you would NOT do 300 epochs, it is toy data
+    logger.progress("epoch", epoch + 1, total=args.epoch)
     for idx, (sentence, tags) in enumerate(training_data):
         logger.progress("data index", idx + 1, total=len(training_data))
         # Step 1. Remember that Pytorch accumulates gradients.
