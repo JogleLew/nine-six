@@ -4,6 +4,12 @@ Unified tools for Neural Network logging and managing.
 
 ## Quick Start
 
+Use pip to install Nine Six modules.
+
+```
+pip3 install ninesix
+```
+ 
 ### Pretty Logging 
 
 ```python
@@ -75,7 +81,7 @@ You can try `example.py` which is a complete example.
 
 Command Line: 
 ```
-python3 ninesix/tool/grid.py -p lr 0.1 0.01 0.001 -p epoch 100 to 201 jump 50 -g 1 2 3 -c "python example.py"
+96grid -p lr 0.1 0.01 0.001 -p epoch 100 to 201 jump 50 -g 1 2 3 -c "python example.py"
 ```
 
 You can use `python3 ninesix/tool/grid.py -h` for more help.

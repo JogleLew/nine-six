@@ -6,7 +6,7 @@ long_description = open('README.md').read()
 setup(
     name='ninesix',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    version="0.0.1",
+    version="0.0.3",
     description='Easy-to-use unified tools for NN logging and managing.',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -24,6 +24,9 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "Topic :: Utilities"
+    ],
+    install_requires=[
+       'more_itertools'
     ],
     entry_points={
         "console_scripts": [

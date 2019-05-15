@@ -9,14 +9,12 @@ import os
 import random as rnd
 import codecs
 import more_itertools
-import numpy as np
-from sklearn.model_selection import ParameterGrid
-import six
 import shutil
 import subprocess
 import sys
 import argparse
 import json
+import copy
 rnd.seed(123)
 
 class GridSearch():
@@ -25,6 +23,19 @@ class GridSearch():
         self.cmd_template = "" 
         self.gpus = [0]
         self.param_grid = {}
+
+    def _parameter_grid(self, obj, level=0):
+        result = []
+        if level >= len(obj.items()):
+            return [{}]
+        key, values = list(obj.items())[level]
+        remain = self._parameter_grid(obj, level=level + 1)
+        for rr in remain:
+            for value in values:
+                srr = copy.deepcopy(rr)
+                srr[key] = value
+                result.append(srr)
+        return result
 
     def generate_grid_search(self):
         cmd_env = self.cmd_env
@@ -35,7 +46,7 @@ class GridSearch():
             shutil.rmtree('grid')
         os.mkdir('grid')
         cmd_list = []
-        for setting in ParameterGrid(param_grid):
+        for setting in self._parameter_grid(param_grid):
             cmd_list.append("NINESIX_CONFIG='" + json.dumps(setting) + "' " + cmd_template)
         print('#cmd:', len(cmd_list))
 
