@@ -88,12 +88,15 @@ class Logger():
             self.watch_pgs[label]["max"] = total
         self._lock.release()
 
-    def unwatch(self, label):
+    def unwatch(self, labels):
         self._lock.acquire()
-        if label in self.watch_pgs:
-            del self.watch_pgs[label]
-        elif label in self.watch_val:
-            del self.watch_val[label]
+        if type(labels) == str:
+            labels = [labels]
+        for label in labels:
+            if label in self.watch_pgs:
+                del self.watch_pgs[label]
+            elif label in self.watch_val:
+                del self.watch_val[label]
         self._lock.release()
 
     def value(self, cur_dict, tag="Log", log_level=1):

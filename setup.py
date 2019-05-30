@@ -6,7 +6,7 @@ long_description = open('README.md').read()
 setup(
     name='ninesix',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    version="0.0.3",
+    version="0.0.4",
     description='Easy-to-use unified tools for NN logging and managing.',
     long_description=long_description,
     long_description_content_type="text/markdown",
